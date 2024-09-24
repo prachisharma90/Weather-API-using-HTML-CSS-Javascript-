@@ -1,44 +1,34 @@
-const apikey="7f232c83766de306ef164650b7658313";
-const apiurl="https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+async function getWeather() {
+    const city = document.getElementById('city').value.trim(); // Trim extra spaces
+    const apiKey = 'fe0e9b80403a6faa65015b868acfc3d1'; // Your actual OpenWeatherMap API key
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
 
-const searchBox=document.querySelector(".search input")
-const searchbtn=document.querySelector(".search button")
-const weatherIcon=document.querySelector(".weather-icon")
-
-async function chackWeather(city){
-    const response=await fetch(apiurl + city +&appid=${apikey});
-    let data=await response.json();
-
-   
-
-    document.querySelector(".city").innerHTML=data.name;
-    document.querySelector(".temp").innerHTML=data.main.temp +"°c";
-    document.querySelector(".humidity").innerHTML=data.main.humidity +"%";
-    document.querySelector(".wind").innerHTML=data.wind.speed +"km/h";
-
-    if(data.weather[0].main =="Clouds"){
-        weatherIcon.src="images/clouds.png"
-    }
-    else if(data.weather[0].main =="Clear"){
-        weatherIcon.src="images/clear.png"
-    }
-    else if(data.weather[0].main =="Rain"){
-        weatherIcon.src="images/rain.png"
-    }
-    else if(data.weather[0].main =="Drizzle"){
-        weatherIcon.src="images/drizzle.png"
-    }
-    else if(data.weather[0].main =="Mist"){
-        weatherIcon.src="images/mist.png"
-    }
-    else if(data.weather[0].main =="Snow"){
-        weatherIcon.src="images/snow.png"
+    // Ensure the input is not empty
+    if (!city) {
+        document.getElementById('weather-result').innerHTML = `<p>Please enter a city name.</p>`;
+        return;
     }
 
-    document.querySelector(".weather").style.display="block"
-    
+    try {
+        const response = await fetch(url);
+        
+        // Handle non-200 status codes
+        if (!response.ok) {
+            throw new Error(`City not found: ${response.status}`);
+        }
+        
+        const data = await response.json();
+
+        // Display weather data
+        document.getElementById('weather-result').innerHTML = `
+            <p><strong>City:</strong> ${data.name}</p>
+            <p><strong>Temperature:</strong> ${data.main.temp} °C</p>
+            <p><strong>Weather:</strong> ${data.weather[0].description}</p>
+        `;
+    } catch (error) {
+        // Display error message
+        document.getElementById('weather-result').innerHTML = `<p>Error: ${error.message}</p>`;
+        console.error("Error fetching weather data:", error); // Log error for debugging
+    }
 }
 
-searchbtn.addEventListener("click",()=>{
-    chackWeather(searchBox.value);
-})
