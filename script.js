@@ -31,4 +31,3 @@ async function getWeather() {
         console.error("Error fetching weather data:", error); // Log error for debugging
     }
 }
-
